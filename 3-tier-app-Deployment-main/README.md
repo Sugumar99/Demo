@@ -47,8 +47,4 @@ Make sure you have the following installed and configured:
 
 **Sugumar Ramachandran**
 
-* 💻 [Website](https://praveshsudha.com)
-* 🧠 [Blog](https://blog.praveshsudha.com)
-* 🐦 [Twitter](https://x.com/praveshstwt)
-* 💼 [LinkedIn](https://www.linkedin.com/in/pravesh-sudha/)
 ---
