@@ -71,5 +71,5 @@ jobs:
 
     - name: 🚀 Deploy to EKS via kubectl
       run: |
-        kubectl set image deployment/$FRONTEND_NAME $FRONTEND_NAME=$FRONTEND_IMAGE -n default --record
-        kubectl set image deployment/$BACKEND_NAME $BACKEND_NAME=$BACKEND_IMAGE -n default --record
+        kubectl set image deployment/$FRONTEND_NAME $FRONTEND_NAME=$FRONTEND_IMAGE -n workshop
+        kubectl set image deployment/$BACKEND_NAME $BACKEND_NAME=$BACKEND_IMAGE -n workshop
