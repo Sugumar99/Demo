@@ -2,7 +2,7 @@ name: CI/CD to EKS (Frontend + Backend)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 env:
   AWS_REGION: us-east-1a
@@ -11,8 +11,8 @@ env:
   FRONTEND_NAME: frontend
   BACKEND_NAME: backend
 
-  FRONTEND_ECR: three-tier-frontend    # 🔁 Replace with your actual repo name in ECR
-  BACKEND_ECR: three-tier-backend       # 🔁 Replace with your actual repo name in ECR
+  FRONTEND_ECR: three-tier-frontend    
+  BACKEND_ECR: three-tier-backend       
 
 permissions:
   id-token: write
