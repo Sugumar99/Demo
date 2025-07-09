@@ -40,7 +40,7 @@ jobs:
     ##############################
     - name: Build Frontend Docker Image
       run: |
-        docker build -t $FRONTEND_NAME:${{ github.sha }} ./frontend
+        docker build -t $FRONTEND_NAME:${{ github.sha }} ./3-tier-app-Deployment-main/frontend
       shell: bash
 
     - name: Tag & Push Frontend to ECR
@@ -57,7 +57,7 @@ jobs:
     ##############################
     - name: Build Backend Docker Image
       run: |
-        docker build -t $BACKEND_NAME:${{ github.sha }} ./backend
+        docker build -t $BACKEND_NAME:${{ github.sha }} ./3-tier-app-Deployment-main/backend
       shell: bash
 
     - name: Tag & Push Backend to ECR
