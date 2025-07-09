@@ -38,6 +38,10 @@ jobs:
     ##############################
     # 🔹 Build & Push Frontend
     ##############################
+
+    - name: Debug: list files
+      run: ls -R
+  
     - name: Build Frontend Docker Image
       run: |
         docker build -t $FRONTEND_NAME:${{ github.sha }} ./frontend
