@@ -66,6 +66,8 @@ jobs:
     # -----------------------------
     #  Deploy to EKS
     # -----------------------------
+
+    
     - name:  Update kubeconfig for EKS
       run: aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
 
