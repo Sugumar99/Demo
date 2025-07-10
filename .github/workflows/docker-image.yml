@@ -23,25 +23,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: ✅ Checkout Code
+    - name:  Checkout Code
       uses: actions/checkout@v4
 
-    - name: 🔐 Configure AWS Credentials via OIDC
+    - name:  Configure AWS Credentials via OIDC
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::227103593336:role/github-actions-eks-deploy-role
         aws-region: ${{ env.AWS_REGION }}
 
-    - name: 🔐 Login to Amazon ECR
+    - name:  Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v2
 
     # -----------------------------
     # 🔹 Build & Push Frontend
     # -----------------------------
-    - name: 🐳 Build Frontend Docker Image
+    - name:  Build Frontend Docker Image
       run: docker build -t $FRONTEND_NAME:${{ github.sha }} ./3-tier-app-Deployment-main/frontend
 
-    - name: 🏷️ Tag & Push Frontend to ECR
+    - name:  Tag & Push Frontend to ECR
       run: |
         ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
         FRONTEND_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$FRONTEND_ECR
@@ -52,10 +52,10 @@ jobs:
     # -----------------------------
     # 🔹 Build & Push Backend
     # -----------------------------
-    - name: 🐳 Build Backend Docker Image
+    - name:  Build Backend Docker Image
       run: docker build -t $BACKEND_NAME:${{ github.sha }} ./3-tier-app-Deployment-main/backend
 
-    - name: 🏷️ Tag & Push Backend to ECR
+    - name:  Tag & Push Backend to ECR
       run: |
         ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
         BACKEND_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$BACKEND_ECR
@@ -64,12 +64,12 @@ jobs:
         echo "BACKEND_IMAGE=$BACKEND_URI:${{ github.sha }}" >> $GITHUB_ENV
 
     # -----------------------------
-    # 🚀 Deploy to EKS
+    #  Deploy to EKS
     # -----------------------------
-    - name: ⚙️ Update kubeconfig for EKS
+    - name:  Update kubeconfig for EKS
       run: aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
 
-    - name: 🚀 Deploy to EKS via kubectl
+    - name:  Deploy to EKS via kubectl
       run: |
         kubectl set image deployment/$FRONTEND_NAME $FRONTEND_NAME=$FRONTEND_IMAGE -n workshop
         kubectl set image deployment/$BACKEND_NAME $BACKEND_NAME=$BACKEND_IMAGE -n workshop
