@@ -54,8 +54,3 @@ class App extends Tasks {
 }
 
 export default App;
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 2cc6a612ca520e75fa7e0ec8c2e0c15dedc7d794
