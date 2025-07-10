@@ -1,0 +1,75 @@
+name: CI/CD to EKS (Frontend + Backend)
+
+on:
+  push:
+    branches: [ "master" ]
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER: Three-tier-cloud
+
+  FRONTEND_NAME: frontend
+  BACKEND_NAME: backend
+
+  FRONTEND_ECR: three-tier-frontend    
+  BACKEND_ECR: three-tier-backend       
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: ✅ Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔐 Configure AWS Credentials via OIDC
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::227103593336:role/github-actions-eks-deploy-role
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: 🔐 Login to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v2
+
+    # -----------------------------
+    # 🔹 Build & Push Frontend
+    # -----------------------------
+    - name: 🐳 Build Frontend Docker Image
+      run: docker build -t $FRONTEND_NAME:${{ github.sha }} ./3-tier-app-Deployment-main/frontend
+
+    - name: 🏷️ Tag & Push Frontend to ECR
+      run: |
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        FRONTEND_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$FRONTEND_ECR
+        docker tag $FRONTEND_NAME:${{ github.sha }} $FRONTEND_URI:${{ github.sha }}
+        docker push $FRONTEND_URI:${{ github.sha }}
+        echo "FRONTEND_IMAGE=$FRONTEND_URI:${{ github.sha }}" >> $GITHUB_ENV
+
+    # -----------------------------
+    # 🔹 Build & Push Backend
+    # -----------------------------
+    - name: 🐳 Build Backend Docker Image
+      run: docker build -t $BACKEND_NAME:${{ github.sha }} ./3-tier-app-Deployment-main/backend
+
+    - name: 🏷️ Tag & Push Backend to ECR
+      run: |
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        BACKEND_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$BACKEND_ECR
+        docker tag $BACKEND_NAME:${{ github.sha }} $BACKEND_URI:${{ github.sha }}
+        docker push $BACKEND_URI:${{ github.sha }}
+        echo "BACKEND_IMAGE=$BACKEND_URI:${{ github.sha }}" >> $GITHUB_ENV
+
+    # -----------------------------
+    # 🚀 Deploy to EKS
+    # -----------------------------
+    - name: ⚙️ Update kubeconfig for EKS
+      run: aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+
+    - name: 🚀 Deploy to EKS via kubectl
+      run: |
+        kubectl set image deployment/$FRONTEND_NAME $FRONTEND_NAME=$FRONTEND_IMAGE -n workshop
+        kubectl set image deployment/$BACKEND_NAME $BACKEND_NAME=$BACKEND_IMAGE -n workshop
